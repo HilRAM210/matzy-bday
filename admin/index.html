@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Dancing+Script:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      :root {
+        --gold: #c9a84c;
+        --gold-light: #f0d080;
+        --gold-dark: #8b6914;
+        --midnight: #0d0820;
+        --deep-navy: #1a1230;
+      }
+
+      body {
+        min-height: 100vh;
+        background: var(--midnight);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Cormorant Garamond", serif;
+      }
+
+      .login-box {
+        width: min(400px, 92vw);
+        background: linear-gradient(160deg, #1e1535, #2a1f4a);
+        border: 1px solid rgba(201, 168, 76, 0.25);
+        border-radius: 16px;
+        padding: 48px 40px;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+      }
+
+      .login-title {
+        font-family: "Dancing Script", cursive;
+        font-size: 32px;
+        color: var(--gold);
+        text-align: center;
+        margin-bottom: 6px;
+      }
+
+      .login-subtitle {
+        font-size: 13px;
+        color: rgba(201, 168, 76, 0.5);
+        text-align: center;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        margin-bottom: 36px;
+      }
+
+      .divider {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 36px;
+      }
+      .div-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(201,168,76,0.3), transparent); }
+      .div-star { color: var(--gold); font-size: 12px; opacity: 0.5; }
+
+      label {
+        display: block;
+        font-size: 12px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(201, 168, 76, 0.7);
+        margin-bottom: 8px;
+      }
+
+      input {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(201, 168, 76, 0.2);
+        border-radius: 8px;
+        padding: 12px 16px;
+        color: #f0e6d0;
+        font-family: "Cormorant Garamond", serif;
+        font-size: 16px;
+        margin-bottom: 20px;
+        transition: border-color 0.2s;
+        outline: none;
+      }
+      input:focus { border-color: rgba(201, 168, 76, 0.6); }
+
+      button {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+        border: none;
+        border-radius: 8px;
+        color: var(--midnight);
+        font-family: "Cormorant Garamond", serif;
+        font-size: 16px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        cursor: pointer;
+        transition: opacity 0.2s, transform 0.2s;
+        margin-top: 4px;
+      }
+      button:hover { opacity: 0.9; transform: translateY(-1px); }
+      button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+      .error-msg {
+        font-size: 13px;
+        color: #e07070;
+        text-align: center;
+        margin-top: 16px;
+        min-height: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-box">
+      <div class="login-title">✦ Admin Panel ✦</div>
+      <div class="login-subtitle">Birthday Card Manager</div>
+      <div class="divider">
+        <div class="div-line"></div>
+        <span class="div-star">❧</span>
+        <div class="div-line"></div>
+      </div>
+
+      <form id="loginForm">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="admin@email.com" required />
+
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="••••••••" required />
+
+        <button type="submit" id="loginBtn">Masuk</button>
+      </form>
+
+      <div class="error-msg" id="errorMsg"></div>
+    </div>
+
+    <script type="module">
+      import { auth } from "../js/firebase.js";
+      import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
+
+      // Redirect jika sudah login
+      auth.onAuthStateChanged(user => {
+        if (user) window.location.href = "dashboard.html";
+      });
+
+      document.getElementById("loginForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById("loginBtn");
+        const errorMsg = document.getElementById("errorMsg");
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        btn.disabled = true;
+        btn.textContent = "Memproses...";
+        errorMsg.textContent = "";
+
+        try {
+          await signInWithEmailAndPassword(auth, email, password);
+          // onAuthStateChanged akan handle redirect
+        } catch (err) {
+          errorMsg.textContent = "Email atau password salah.";
+          btn.disabled = false;
+          btn.textContent = "Masuk";
+        }
+      });
+    </script>
+  </body>
+</html>
