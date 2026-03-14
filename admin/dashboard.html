@@ -391,6 +391,9 @@
       }
       .card-item-link span {
         flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
       .btn-copy {
         background: none;
@@ -823,11 +826,9 @@
             </div>
           </div>
           <div class="badge ${c.isPublic ? "badge-public" : "badge-draft"}">${c.isPublic ? "Public" : "Draft"}</div>
-          ${c.isPublic ? `
           <div class="card-item-link">
-            <span>${publicUrl}</span>
-            <button class="btn-copy" title="Salin link" data-url="${publicUrl}">⎘</button>
-          </div>` : ""}
+            ${c.isPublic ? `<span>${publicUrl}</span><button class="btn-copy" title="Salin link" data-url="${publicUrl}">⎘</button>` : `<span>&nbsp;</span>`}
+          </div>
           <div class="card-item-actions">
             <button class="btn-ghost btn-edit" data-id="${c.id}">Edit</button>
             <button class="btn-ghost btn-toggle" data-id="${c.id}" data-public="${c.isPublic}">
