@@ -483,7 +483,7 @@
       import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
       import {
         collection, addDoc, getDocs, doc, updateDoc, deleteDoc,
-        serverTimestamp, query, orderBy
+        serverTimestamp
       } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
       import { uploadPhoto } from "../js/cloudinary.js";
 
@@ -663,18 +663,23 @@
         const grid = document.getElementById("cardsGrid");
         grid.innerHTML = '<div class="empty-state">Memuat...</div>';
 
-        const snap = await getDocs(query(collection(db, "cards"), orderBy("createdAt", "desc")));
+        try {
+          const snap = await getDocs(collection(db, "cards"));
 
-        if (snap.empty) {
-          grid.innerHTML = '<div class="empty-state">Belum ada kartu. Buat yang pertama!</div>';
-          return;
+          if (snap.empty) {
+            grid.innerHTML = '<div class="empty-state">Belum ada kartu. Buat yang pertama!</div>';
+            return;
+          }
+
+          const cards = [];
+          snap.forEach(docSnap => cards.push({ id: docSnap.id, ...docSnap.data() }));
+          cards.sort((a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0));
+
+          grid.innerHTML = "";
+          cards.forEach(c => grid.appendChild(renderCardItem(c)));
+        } catch (err) {
+          grid.innerHTML = `<div class="empty-state" style="color:#e07070">Error: ${err.message}</div>`;
         }
-
-        grid.innerHTML = "";
-        snap.forEach(docSnap => {
-          const c = { id: docSnap.id, ...docSnap.data() };
-          grid.appendChild(renderCardItem(c));
-        });
       }
 
       function renderCardItem(c) {
@@ -716,7 +721,7 @@
 
         // Edit
         el.querySelector(".btn-edit").addEventListener("click", async () => {
-          const snap = await getDocs(query(collection(db, "cards")));
+          const snap = await getDocs(collection(db, "cards"));
           const found = snap.docs.find(d => d.id === c.id);
           if (found) openModal({ id: found.id, ...found.data() });
         });
