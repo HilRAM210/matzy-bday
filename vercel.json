@@ -2,6 +2,7 @@
   "rewrites": [
     { "source": "/", "destination": "/admin/index.html" },
     { "source": "/card", "destination": "/card.html" },
-    { "source": "/dashboard", "destination": "/admin/dashboard.html" }
+    { "source": "/dashboard", "destination": "/admin/dashboard.html" },
+    { "source": "/card?id=:slug", "destination": "/card.html" }
   ]
 }
