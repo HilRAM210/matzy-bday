@@ -9,7 +9,13 @@
       rel="stylesheet"
     />
     <style>
-      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
       :root {
         --gold: #c9a84c;
@@ -68,7 +74,10 @@
         cursor: pointer;
         transition: all 0.2s;
       }
-      .btn-logout:hover { border-color: var(--danger); color: var(--danger); }
+      .btn-logout:hover {
+        border-color: var(--danger);
+        color: var(--danger);
+      }
 
       /* ── Layout ── */
       .container {
@@ -102,10 +111,19 @@
         font-weight: 600;
         padding: 10px 22px;
         cursor: pointer;
-        transition: opacity 0.2s, transform 0.2s;
+        transition:
+          opacity 0.2s,
+          transform 0.2s;
       }
-      .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
-      .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+      .btn-primary:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+      }
+      .btn-primary:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        transform: none;
+      }
 
       .btn-ghost {
         background: none;
@@ -118,7 +136,10 @@
         cursor: pointer;
         transition: all 0.2s;
       }
-      .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+      .btn-ghost:hover {
+        border-color: var(--gold);
+        color: var(--gold);
+      }
 
       .btn-danger {
         background: none;
@@ -131,7 +152,9 @@
         cursor: pointer;
         transition: all 0.2s;
       }
-      .btn-danger:hover { background: rgba(224, 112, 112, 0.1); }
+      .btn-danger:hover {
+        background: rgba(224, 112, 112, 0.1);
+      }
 
       /* ── Modal ── */
       .modal-overlay {
@@ -148,7 +171,10 @@
         pointer-events: none;
         transition: opacity 0.25s;
       }
-      .modal-overlay.open { opacity: 1; pointer-events: all; }
+      .modal-overlay.open {
+        opacity: 1;
+        pointer-events: all;
+      }
 
       .modal {
         background: var(--panel);
@@ -162,7 +188,9 @@
         transform: translateY(20px);
         transition: transform 0.25s;
       }
-      .modal-overlay.open .modal { transform: translateY(0); }
+      .modal-overlay.open .modal {
+        transform: translateY(0);
+      }
 
       .modal-title {
         font-family: "Dancing Script", cursive;
@@ -181,7 +209,9 @@
       }
 
       /* ── Form ── */
-      .form-group { margin-bottom: 18px; }
+      .form-group {
+        margin-bottom: 18px;
+      }
       .form-group label {
         display: block;
         font-size: 12px;
@@ -205,7 +235,9 @@
         resize: vertical;
       }
       .form-group input:focus,
-      .form-group textarea:focus { border-color: rgba(201, 168, 76, 0.6); }
+      .form-group textarea:focus {
+        border-color: rgba(201, 168, 76, 0.6);
+      }
 
       /* Photo upload */
       .photo-upload-area {
@@ -217,8 +249,10 @@
         transition: border-color 0.2s;
         position: relative;
       }
-      .photo-upload-area:hover { border-color: var(--gold); }
-      .photo-upload-area input[type=file] {
+      .photo-upload-area:hover {
+        border-color: var(--gold);
+      }
+      .photo-upload-area input[type="file"] {
         position: absolute;
         inset: 0;
         opacity: 0;
@@ -238,17 +272,26 @@
         margin: 0 auto 8px;
         display: none;
       }
-      .photo-upload-hint { font-size: 14px; color: var(--text-muted); }
+      .photo-upload-hint {
+        font-size: 14px;
+        color: var(--text-muted);
+      }
 
       /* Wishes editor */
-      .wishes-editor { display: flex; flex-direction: column; gap: 8px; }
+      .wishes-editor {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
       .wish-row {
         display: grid;
         grid-template-columns: 48px 1fr auto;
         gap: 8px;
         align-items: center;
       }
-      .wish-row input { margin: 0; }
+      .wish-row input {
+        margin: 0;
+      }
       .btn-remove-wish {
         background: none;
         border: none;
@@ -258,7 +301,9 @@
         padding: 4px 8px;
         transition: color 0.2s;
       }
-      .btn-remove-wish:hover { color: var(--danger); }
+      .btn-remove-wish:hover {
+        color: var(--danger);
+      }
       .btn-add-wish {
         background: none;
         border: 1px dashed var(--border);
@@ -271,7 +316,10 @@
         transition: all 0.2s;
         margin-top: 4px;
       }
-      .btn-add-wish:hover { border-color: var(--gold); color: var(--gold); }
+      .btn-add-wish:hover {
+        border-color: var(--gold);
+        color: var(--gold);
+      }
 
       /* ── Cards list ── */
       .cards-grid {
@@ -287,7 +335,9 @@
         padding: 20px;
         transition: border-color 0.2s;
       }
-      .card-item:hover { border-color: rgba(201, 168, 76, 0.4); }
+      .card-item:hover {
+        border-color: rgba(201, 168, 76, 0.4);
+      }
 
       .card-item-header {
         display: flex;
@@ -330,7 +380,7 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        background: rgba(255,255,255,0.04);
+        background: rgba(255, 255, 255, 0.04);
         border: 1px solid var(--border);
         border-radius: 6px;
         padding: 8px 12px;
@@ -339,7 +389,9 @@
         color: var(--text-muted);
         word-break: break-all;
       }
-      .card-item-link span { flex: 1; }
+      .card-item-link span {
+        flex: 1;
+      }
       .btn-copy {
         background: none;
         border: none;
@@ -350,9 +402,14 @@
         flex-shrink: 0;
         transition: opacity 0.2s;
       }
-      .btn-copy:hover { opacity: 0.7; }
+      .btn-copy:hover {
+        opacity: 0.7;
+      }
 
-      .card-item-actions { display: flex; gap: 8px; }
+      .card-item-actions {
+        display: flex;
+        gap: 8px;
+      }
 
       .badge {
         display: inline-block;
@@ -363,8 +420,16 @@
         border-radius: 4px;
         margin-bottom: 12px;
       }
-      .badge-public { background: rgba(168, 216, 200, 0.15); color: #a8d8c8; border: 1px solid rgba(168,216,200,0.3); }
-      .badge-draft { background: rgba(201, 168, 76, 0.1); color: var(--gold); border: 1px solid var(--border); }
+      .badge-public {
+        background: rgba(168, 216, 200, 0.15);
+        color: #a8d8c8;
+        border: 1px solid rgba(168, 216, 200, 0.3);
+      }
+      .badge-draft {
+        background: rgba(201, 168, 76, 0.1);
+        color: var(--gold);
+        border: 1px solid var(--border);
+      }
 
       /* ── Empty state ── */
       .empty-state {
@@ -391,7 +456,10 @@
         opacity: 0;
         transition: all 0.3s;
       }
-      .toast.show { transform: translateY(0); opacity: 1; }
+      .toast.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
 
       /* ── Status message ── */
       .status-msg {
@@ -404,9 +472,8 @@
     </style>
   </head>
   <body>
-
     <nav>
-      <div class="nav-brand">✦ Admin Panel</div>
+      <div class="nav-brand">✦ Matzy Bday</div>
       <div class="nav-user">
         <span id="navEmail"></span>
         <button class="btn-logout" id="btnLogout">Keluar</button>
@@ -435,23 +502,38 @@
             <div class="photo-upload-area" id="photoUploadArea">
               <input type="file" id="photoInput" accept="image/*" />
               <img class="photo-preview" id="photoPreview" alt="preview" />
-              <div class="photo-upload-hint" id="photoHint">🖼 Klik untuk upload foto</div>
+              <div class="photo-upload-hint" id="photoHint">
+                🖼 Klik untuk upload foto
+              </div>
             </div>
           </div>
 
           <div class="form-group">
             <label>Nama Penerima</label>
-            <input type="text" id="fieldName" placeholder="Nama lengkap" required />
+            <input
+              type="text"
+              id="fieldName"
+              placeholder="Nama lengkap"
+              required
+            />
           </div>
 
           <div class="form-group">
             <label>Subjudul (halaman depan)</label>
-            <input type="text" id="fieldSubtitle" placeholder="Semoga hari ulang tahunmu..." />
+            <input
+              type="text"
+              id="fieldSubtitle"
+              placeholder="Semoga hari ulang tahunmu..."
+            />
           </div>
 
           <div class="form-group">
             <label>Pesan</label>
-            <textarea id="fieldMessage" rows="5" placeholder="Tulis pesan di sini..."></textarea>
+            <textarea
+              id="fieldMessage"
+              rows="5"
+              placeholder="Tulis pesan di sini..."
+            ></textarea>
           </div>
 
           <div class="form-group">
@@ -462,7 +544,9 @@
           <div class="form-group">
             <label>Wishes (ikon + teks)</label>
             <div class="wishes-editor" id="wishesEditor"></div>
-            <button type="button" class="btn-add-wish" id="btnAddWish">+ Tambah wish</button>
+            <button type="button" class="btn-add-wish" id="btnAddWish">
+              + Tambah wish
+            </button>
           </div>
 
           <div class="status-msg" id="formStatus"></div>
@@ -480,21 +564,34 @@
 
     <script type="module">
       import { auth, db } from "../js/firebase.js";
-      import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
       import {
-        collection, addDoc, getDocs, doc, updateDoc, deleteDoc,
-        serverTimestamp
+        signOut,
+        onAuthStateChanged,
+      } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
+      import {
+        collection,
+        addDoc,
+        getDocs,
+        doc,
+        updateDoc,
+        deleteDoc,
+        serverTimestamp,
       } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
       import { uploadPhoto } from "../js/cloudinary.js";
 
       // ── Auth guard ──
-      onAuthStateChanged(auth, user => {
-        if (!user) { window.location.href = "index.html"; return; }
+      onAuthStateChanged(auth, (user) => {
+        if (!user) {
+          window.location.href = "index.html";
+          return;
+        }
         document.getElementById("navEmail").textContent = user.email;
         loadCards();
       });
 
-      document.getElementById("btnLogout").addEventListener("click", () => signOut(auth));
+      document
+        .getElementById("btnLogout")
+        .addEventListener("click", () => signOut(auth));
 
       // ── Toast ──
       function showToast(msg) {
@@ -535,17 +632,19 @@
       }
 
       function getWishes() {
-        return [...document.querySelectorAll("#wishesEditor .wish-row")].map(row => {
-          const inputs = row.querySelectorAll("input");
-          return { icon: inputs[0].value, text: inputs[1].value };
-        });
+        return [...document.querySelectorAll("#wishesEditor .wish-row")].map(
+          (row) => {
+            const inputs = row.querySelectorAll("input");
+            return { icon: inputs[0].value, text: inputs[1].value };
+          },
+        );
       }
 
       document.getElementById("btnAddWish").addEventListener("click", () => {
         renderWishes([...getWishes(), { icon: "✨", text: "" }]);
       });
 
-      document.getElementById("wishesEditor").addEventListener("click", e => {
+      document.getElementById("wishesEditor").addEventListener("click", (e) => {
         if (e.target.classList.contains("btn-remove-wish")) {
           const wishes = getWishes();
           wishes.splice(+e.target.dataset.i, 1);
@@ -555,7 +654,7 @@
 
       // ── Photo preview ──
       let pendingPhotoFile = null;
-      document.getElementById("photoInput").addEventListener("change", e => {
+      document.getElementById("photoInput").addEventListener("change", (e) => {
         const file = e.target.files[0];
         if (!file) return;
         pendingPhotoFile = file;
@@ -574,9 +673,12 @@
         currentPhotoUrl = card?.photoUrl ?? null;
         pendingPhotoFile = null;
 
-        document.getElementById("modalTitle").textContent = card ? "Edit Kartu" : "Buat Kartu Baru";
+        document.getElementById("modalTitle").textContent = card
+          ? "Edit Kartu"
+          : "Buat Kartu Baru";
         document.getElementById("fieldName").value = card?.name ?? "";
-        document.getElementById("fieldSubtitle").value = card?.subtitle ?? "Semoga Hari Ulang Tahunmu Penuh Keberuntungan!";
+        document.getElementById("fieldSubtitle").value =
+          card?.subtitle ?? "Semoga Hari Ulang Tahunmu Penuh Keberuntungan!";
         document.getElementById("fieldMessage").value = card?.message ?? "";
         document.getElementById("fieldSignature").value = card?.signature ?? "";
         document.getElementById("formStatus").textContent = "";
@@ -600,9 +702,13 @@
         editingId = null;
       }
 
-      document.getElementById("btnNewCard").addEventListener("click", () => openModal());
-      document.getElementById("btnCancel").addEventListener("click", closeModal);
-      document.getElementById("modalOverlay").addEventListener("click", e => {
+      document
+        .getElementById("btnNewCard")
+        .addEventListener("click", () => openModal());
+      document
+        .getElementById("btnCancel")
+        .addEventListener("click", closeModal);
+      document.getElementById("modalOverlay").addEventListener("click", (e) => {
         if (e.target === e.currentTarget) closeModal();
       });
 
@@ -611,7 +717,10 @@
         const btn = document.getElementById("btnSave");
         const status = document.getElementById("formStatus");
         const name = document.getElementById("fieldName").value.trim();
-        if (!name) { status.textContent = "Nama penerima wajib diisi."; return; }
+        if (!name) {
+          status.textContent = "Nama penerima wajib diisi.";
+          return;
+        }
 
         btn.disabled = true;
         btn.textContent = "Menyimpan...";
@@ -667,16 +776,21 @@
           const snap = await getDocs(collection(db, "cards"));
 
           if (snap.empty) {
-            grid.innerHTML = '<div class="empty-state">Belum ada kartu. Buat yang pertama!</div>';
+            grid.innerHTML =
+              '<div class="empty-state">Belum ada kartu. Buat yang pertama!</div>';
             return;
           }
 
           const cards = [];
-          snap.forEach(docSnap => cards.push({ id: docSnap.id, ...docSnap.data() }));
-          cards.sort((a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0));
+          snap.forEach((docSnap) =>
+            cards.push({ id: docSnap.id, ...docSnap.data() }),
+          );
+          cards.sort(
+            (a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0),
+          );
 
           grid.innerHTML = "";
-          cards.forEach(c => grid.appendChild(renderCardItem(c)));
+          cards.forEach((c) => grid.appendChild(renderCardItem(c)));
         } catch (err) {
           grid.innerHTML = `<div class="empty-state" style="color:#e07070">Error: ${err.message}</div>`;
         }
@@ -685,25 +799,35 @@
       function renderCardItem(c) {
         const origin = window.location.origin;
         const publicUrl = `${origin}/card.html?id=${c.slug}`;
-        const date = c.createdAt?.toDate().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }) ?? "—";
+        const date =
+          c.createdAt
+            ?.toDate()
+            .toLocaleDateString("id-ID", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            }) ?? "—";
 
         const el = document.createElement("div");
         el.className = "card-item";
         el.innerHTML = `
           <div class="card-item-header">
-            ${c.photoUrl
-              ? `<img class="card-item-photo" src="${c.photoUrl}" alt="${c.name}" />`
-              : `<div class="card-item-photo-placeholder">🎂</div>`}
+            ${
+              c.photoUrl
+                ? `<img class="card-item-photo" src="${c.photoUrl}" alt="${c.name}" />`
+                : `<div class="card-item-photo-placeholder">🎂</div>`
+            }
             <div>
               <div class="card-item-name">${c.name}</div>
               <div class="card-item-date">${date}</div>
             </div>
           </div>
           <div class="badge ${c.isPublic ? "badge-public" : "badge-draft"}">${c.isPublic ? "Public" : "Draft"}</div>
+          ${c.isPublic ? `
           <div class="card-item-link">
             <span>${publicUrl}</span>
             <button class="btn-copy" title="Salin link" data-url="${publicUrl}">⎘</button>
-          </div>
+          </div>` : ""}
           <div class="card-item-actions">
             <button class="btn-ghost btn-edit" data-id="${c.id}">Edit</button>
             <button class="btn-ghost btn-toggle" data-id="${c.id}" data-public="${c.isPublic}">
@@ -714,7 +838,7 @@
         `;
 
         // Copy link
-        el.querySelector(".btn-copy").addEventListener("click", e => {
+        el.querySelector(".btn-copy")?.addEventListener("click", (e) => {
           navigator.clipboard.writeText(e.currentTarget.dataset.url);
           showToast("Link disalin ✓");
         });
@@ -722,15 +846,17 @@
         // Edit
         el.querySelector(".btn-edit").addEventListener("click", async () => {
           const snap = await getDocs(collection(db, "cards"));
-          const found = snap.docs.find(d => d.id === c.id);
+          const found = snap.docs.find((d) => d.id === c.id);
           if (found) openModal({ id: found.id, ...found.data() });
         });
 
         // Toggle public
-        el.querySelector(".btn-toggle").addEventListener("click", async e => {
+        el.querySelector(".btn-toggle").addEventListener("click", async (e) => {
           const isPublic = e.currentTarget.dataset.public === "true";
           await updateDoc(doc(db, "cards", c.id), { isPublic: !isPublic });
-          showToast(isPublic ? "Kartu disembunyikan" : "Kartu dipublikasikan ✓");
+          showToast(
+            isPublic ? "Kartu disembunyikan" : "Kartu dipublikasikan ✓",
+          );
           loadCards();
         });
 

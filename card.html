@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Selamat Ulang Tahun</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Dancing+Script:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+
+    <!-- Loading -->
+    <div id="loadingScreen" style="
+      position:fixed; inset:0; background:#0d0820;
+      display:flex; align-items:center; justify-content:center;
+      font-family:'Cormorant Garamond',serif; color:rgba(201,168,76,0.6);
+      font-size:18px; letter-spacing:0.2em; z-index:999;
+    ">✦ &nbsp; Memuat &nbsp; ✦</div>
+
+    <!-- Not found -->
+    <div id="notFoundScreen" style="
+      position:fixed; inset:0; background:#0d0820;
+      display:none; align-items:center; justify-content:center;
+      flex-direction:column; gap:16px; text-align:center; padding:20px;
+    ">
+      <div style="font-size:48px">🎂</div>
+      <div style="font-family:'Dancing Script',cursive; font-size:28px; color:#c9a84c;">Kartu tidak ditemukan</div>
+      <div style="font-family:'Cormorant Garamond',serif; color:rgba(240,230,208,0.5); font-size:16px;">Link mungkin sudah tidak aktif atau belum dipublikasikan.</div>
+    </div>
+
+    <div class="stars" id="stars"></div>
+    <div class="particles" id="particles"></div>
+
+    <div class="scene">
+      <div class="envelope-wrapper" id="envelopeWrapper" onclick="openEnvelope()">
+        <div class="envelope" id="envelope">
+          <div class="env-body"></div>
+          <div class="env-left"></div>
+          <div class="env-right"></div>
+          <div class="env-bottom"></div>
+          <div class="env-flap"></div>
+          <div class="env-deco"></div>
+          <div class="wax-seal"><div class="seal-circle">🌸</div></div>
+        </div>
+      </div>
+      <div class="click-hint" id="clickHint">✦ Ketuk untuk membuka ✦</div>
+    </div>
+
+    <!-- Birthday Card -->
+    <div class="card-container" id="cardContainer">
+      <div class="card" id="card">
+        <div class="card-flipper" id="cardFlipper">
+
+          <!-- FRONT -->
+          <div class="card-face card-front">
+            <div class="card-top-border"></div>
+            <div class="front-inner">
+              <div class="corner corner-tl">❧</div>
+              <div class="corner corner-tr">❧</div>
+              <div class="corner corner-bl">❧</div>
+              <div class="corner corner-br">❧</div>
+              <img id="profilePhoto" src="" alt="Profile" class="profile-photo" style="display:none" />
+              <div class="front-name" id="frontName"></div>
+              <div class="divider" style="width:60%;margin:8px auto">
+                <div class="div-line"></div>
+                <span class="div-star">✦</span>
+                <div class="div-line"></div>
+              </div>
+              <div class="front-subtitle" id="frontSubtitle"></div>
+              <div class="flip-hint" onclick="flipCard()">✦ Buka kartu ✦</div>
+            </div>
+          </div>
+
+          <!-- BACK -->
+          <div class="card-face card-back">
+            <div class="card-top-border"></div>
+            <div class="card-inner">
+              <button class="close-btn" onclick="closeCard()">✕</button>
+              <div class="bg-deco" id="bgDeco"></div>
+              <div class="corner corner-tl">❧</div>
+              <div class="corner corner-tr">❧</div>
+              <div class="corner corner-bl">❧</div>
+              <div class="corner corner-br">❧</div>
+
+              <div class="cake-area">
+                <div class="confetti-ring" id="confettiRing"></div>
+                <span class="cake-emoji">🎂</span>
+              </div>
+
+              <div class="card-title">Selamat Ulang Tahun!</div>
+              <div class="card-subtitle">— dengan penuh cinta & kebahagiaan —</div>
+
+              <div class="divider">
+                <div class="div-line"></div>
+                <span class="div-star">✦</span>
+                <div class="div-line"></div>
+              </div>
+
+              <p class="card-message" id="cardMessage"></p>
+
+              <div class="divider">
+                <div class="div-line"></div>
+                <span class="div-star">✦</span>
+                <div class="div-line"></div>
+              </div>
+
+              <div class="wishes-grid" id="wishesGrid"></div>
+
+              <div class="divider">
+                <div class="div-line"></div>
+                <span class="div-star">✦</span>
+                <div class="div-line"></div>
+              </div>
+
+              <div class="card-signature" id="cardSignature"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="confetti-burst" id="confettiBurst"></div>
+
+    <script type="module">
+      import { db } from "./js/firebase.js";
+      import { collection, query, where, getDocs, limit } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+
+      // ── Fetch card data ──
+      const slug = new URLSearchParams(window.location.search).get("id");
+
+      async function loadCard() {
+        if (!slug) return showNotFound();
+
+        try {
+          const snap = await getDocs(
+            query(collection(db, "cards"), where("slug", "==", slug), where("isPublic", "==", true), limit(1))
+          );
+          if (snap.empty) return showNotFound();
+          renderCard(snap.docs[0].data());
+        } catch {
+          showNotFound();
+        }
+      }
+
+      function showNotFound() {
+        document.getElementById("loadingScreen").style.display = "none";
+        const el = document.getElementById("notFoundScreen");
+        el.style.display = "flex";
+      }
+
+      function renderCard(c) {
+        document.title = `Selamat Ulang Tahun, ${c.name}!`;
+
+        // Front
+        document.getElementById("frontName").textContent = c.name;
+        document.getElementById("frontSubtitle").textContent = c.subtitle || "";
+
+        if (c.photoUrl) {
+          const img = document.getElementById("profilePhoto");
+          img.src = c.photoUrl;
+          img.style.display = "block";
+        }
+
+        // Back - message (preserve line breaks)
+        document.getElementById("cardMessage").innerHTML =
+          (c.message || "").replace(/\n/g, "<br/>");
+
+        // Back - wishes
+        const grid = document.getElementById("wishesGrid");
+        (c.wishes || []).forEach(w => {
+          const el = document.createElement("div");
+          el.className = "wish-card";
+          el.innerHTML = `<span class="wish-icon">${w.icon}</span><div class="wish-text">${w.text}</div>`;
+          grid.appendChild(el);
+        });
+
+        // Back - signature
+        document.getElementById("cardSignature").textContent = c.signature || "";
+
+        // Hide loading, init animations
+        document.getElementById("loadingScreen").style.display = "none";
+        initAnimations();
+      }
+
+      // ── Animations (same as main.js) ──
+      function initAnimations() {
+        // Stars
+        const starsEl = document.getElementById("stars");
+        for (let i = 0; i < 80; i++) {
+          const s = document.createElement("div");
+          s.className = "star";
+          const size = Math.random() * 2.5 + 0.5;
+          s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;width:${size}px;height:${size}px;--dur:${2+Math.random()*3}s;--delay:${Math.random()*4}s;`;
+          starsEl.appendChild(s);
+        }
+
+        // Particles
+        const particlesEl = document.getElementById("particles");
+        const emojis = ["✨","🌸","⭐","🎉","💫","🌺","✦","🎈"];
+        for (let i = 0; i < 14; i++) {
+          const p = document.createElement("div");
+          p.className = "particle";
+          p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+          p.style.cssText = `left:${Math.random()*100}%;--size:${10+Math.random()*14}px;--dur:${8+Math.random()*10}s;--delay:${Math.random()*10}s;`;
+          particlesEl.appendChild(p);
+        }
+
+        // Orbiting dots
+        const ring = document.getElementById("confettiRing");
+        const dotColors = ["#C9A84C","#E8A0B0","#C8A8D8","#A8D8C8","#F0D080","#E8C060"];
+        for (let i = 0; i < 6; i++) {
+          const d = document.createElement("div");
+          d.className = "conf-dot";
+          d.style.cssText = `background:${dotColors[i]};left:50%;top:50%;margin:-4px 0 0 -4px;--dur:${3+i*0.3}s;--delay:${i*0.2}s;--start:${(i/6)*360}deg;`;
+          ring.appendChild(d);
+        }
+
+        // BG flowers
+        const bgDeco = document.getElementById("bgDeco");
+        const flowers = ["✿","❋","✾","❀","✽"];
+        for (let i = 0; i < 8; i++) {
+          const f = document.createElement("div");
+          f.className = "bg-flower";
+          f.textContent = flowers[i % flowers.length];
+          f.style.cssText = `left:${Math.random()*85}%;top:${Math.random()*85}%;transform:rotate(${Math.random()*360}deg);font-size:${30+Math.random()*30}px;color:#8B6914;`;
+          bgDeco.appendChild(f);
+        }
+      }
+
+      // ── Envelope & card interactions ──
+      let opened = false;
+
+      window.openEnvelope = function () {
+        if (opened) return;
+        opened = true;
+        document.getElementById("envelope").classList.add("opening");
+        document.getElementById("clickHint").style.opacity = "0";
+        setTimeout(() => {
+          document.getElementById("cardContainer").classList.add("visible");
+          triggerConfetti();
+        }, 700);
+      };
+
+      window.flipCard = function () {
+        document.getElementById("card").classList.add("flipped");
+      };
+
+      window.closeCard = function () {
+        document.getElementById("card").classList.remove("flipped");
+        document.getElementById("cardContainer").classList.remove("visible");
+        setTimeout(() => {
+          document.getElementById("envelope").classList.remove("opening");
+          document.getElementById("clickHint").style.opacity = "1";
+          opened = false;
+        }, 500);
+      };
+
+      function triggerConfetti() {
+        const burst = document.getElementById("confettiBurst");
+        burst.innerHTML = "";
+        const colors = ["#C9A84C","#E8A0B0","#C8A8D8","#A8D8C8","#F0D080","#FF9999","#FFD700","#98FB98"];
+        for (let i = 0; i < 80; i++) {
+          const p = document.createElement("div");
+          p.className = "burst-piece";
+          const angle = Math.random() * 360;
+          const dist = 100 + Math.random() * 250;
+          const rad = (angle * Math.PI) / 180;
+          const isRect = Math.random() > 0.5;
+          p.style.cssText = `--w:${isRect?4+Math.random()*6:6+Math.random()*8}px;--h:${isRect?8+Math.random()*12:6+Math.random()*8}px;--br:${isRect?"2px":"50%"};--color:${colors[Math.floor(Math.random()*colors.length)]};--tx:${Math.cos(rad)*dist}px;--ty:${Math.sin(rad)*dist}px;--rot:${Math.random()*720-360}deg;--delay:${Math.random()*0.3}s;`;
+          burst.appendChild(p);
+        }
+        setTimeout(() => { burst.innerHTML = ""; }, 2000);
+      }
+
+      loadCard();
+    </script>
+  </body>
+</html>
