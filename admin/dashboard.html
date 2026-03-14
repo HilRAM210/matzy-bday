@@ -478,7 +478,6 @@
     <nav>
       <div class="nav-brand">✦ Matzy Bday</div>
       <div class="nav-user">
-        <span id="navEmail"></span>
         <button class="btn-logout" id="btnLogout">Keluar</button>
       </div>
     </nav>
@@ -588,7 +587,6 @@
           window.location.href = "index.html";
           return;
         }
-        document.getElementById("navEmail").textContent = user.email;
         loadCards();
       });
 
@@ -803,13 +801,11 @@
         const origin = window.location.origin;
         const publicUrl = `${origin}/card.html?id=${c.slug}`;
         const date =
-          c.createdAt
-            ?.toDate()
-            .toLocaleDateString("id-ID", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            }) ?? "—";
+          c.createdAt?.toDate().toLocaleDateString("id-ID", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          }) ?? "—";
 
         const el = document.createElement("div");
         el.className = "card-item";
