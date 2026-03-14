@@ -799,7 +799,7 @@
 
       function renderCardItem(c) {
         const origin = window.location.origin;
-        const publicUrl = `${origin}/card.html?id=${c.slug}`;
+        const publicUrl = `${origin}/card?id=${c.slug}`;
         const date =
           c.createdAt?.toDate().toLocaleDateString("id-ID", {
             day: "numeric",
