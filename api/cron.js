@@ -1,6 +1,6 @@
 import { initializeApp, getApps, cert } from "firebase-admin/app";
 import { getFirestore, Timestamp } from "firebase-admin/firestore";
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 
 if (!getApps().length) {
   initializeApp({
@@ -13,7 +13,13 @@ if (!getApps().length) {
 }
 
 const db = getFirestore();
-const resend = new Resend(process.env.RESEND_API_KEY);
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS,
+  },
+});
 
 export default async function handler(req, res) {
   if (req.headers.authorization !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -21,10 +27,7 @@ export default async function handler(req, res) {
   }
 
   const now = Timestamp.now();
-  const snap = await db
-    .collection("cards")
-    .where("isPublic", "==", false)
-    .get();
+  const snap = await db.collection("cards").where("isPublic", "==", false).get();
 
   const due = snap.docs.filter(
     (d) => d.data().scheduledAt && d.data().scheduledAt.toMillis() <= now.toMillis()
@@ -38,14 +41,15 @@ export default async function handler(req, res) {
     await d.ref.update({ isPublic: true });
 
     if (card.recipientEmail) {
-      await resend.emails.send({
-        from: process.env.EMAIL_FROM,
+      await transporter.sendMail({
+        from: `"Matzy Bday" <${process.env.GMAIL_USER}>`,
         to: card.recipientEmail,
         subject: `Ada kartu untukmu dari ${card.signature || "seseorang"} 🎉`,
         html: `
           <p>Hei <strong>${card.name}</strong>,</p>
           <p>Ada seseorang yang mengirimkan kartu spesial untukmu.</p>
-          <p><a href="${baseUrl}/card?id=${card.slug}" style="padding:10px 20px;background:#c9a84c;color:#0d0820;border-radius:8px;text-decoration:none;font-weight:bold;">Buka Kartumu</a></p>
+          <br/>
+          <a href="${baseUrl}/card?id=${card.slug}" style="padding:10px 20px;background:#c9a84c;color:#0d0820;border-radius:8px;text-decoration:none;font-weight:bold;">Buka Kartumu</a>
         `,
       });
     }
