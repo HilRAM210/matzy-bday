@@ -24,13 +24,16 @@ export default async function handler(req, res) {
   const snap = await db
     .collection("cards")
     .where("isPublic", "==", false)
-    .where("scheduledAt", "<=", now)
     .get();
 
-  if (snap.empty) return res.status(200).json({ published: 0 });
+  const due = snap.docs.filter(
+    (d) => d.data().scheduledAt && d.data().scheduledAt.toMillis() <= now.toMillis()
+  );
+
+  if (!due.length) return res.status(200).json({ published: 0 });
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://matzy-bday.vercel.app";
-  const jobs = snap.docs.map(async (d) => {
+  const jobs = due.map(async (d) => {
     const card = d.data();
     await d.ref.update({ isPublic: true });
 
@@ -49,5 +52,5 @@ export default async function handler(req, res) {
   });
 
   await Promise.all(jobs);
-  res.status(200).json({ published: snap.size });
+  res.status(200).json({ published: due.length });
 }
