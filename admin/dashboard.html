@@ -573,6 +573,17 @@
           </div>
 
           <div class="form-group">
+            <label>Email Penerima</label>
+            <input type="email" id="fieldEmail" placeholder="email@contoh.com" />
+          </div>
+
+          <div class="form-group">
+            <label>Jadwal Publikasi Otomatis</label>
+            <input type="datetime-local" id="fieldScheduledAt" />
+            <small style="color:rgba(201,168,76,0.5);font-size:12px;">Kosongkan jika ingin publish manual</small>
+          </div>
+
+          <div class="form-group">
             <label>Wishes (ikon + teks)</label>
             <div class="wishes-editor" id="wishesEditor"></div>
             <button type="button" class="btn-add-wish" id="btnAddWish">
@@ -620,6 +631,7 @@
         updateDoc,
         deleteDoc,
         serverTimestamp,
+        Timestamp,
       } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
       import { uploadPhoto } from "../js/cloudinary.js";
 
@@ -724,6 +736,10 @@
           card?.subtitle ?? "Semoga Hari Ulang Tahunmu Penuh Keberuntungan!";
         document.getElementById("fieldMessage").value = card?.message ?? "";
         document.getElementById("fieldSignature").value = card?.signature ?? "";
+        document.getElementById("fieldEmail").value = card?.recipientEmail ?? "";
+        document.getElementById("fieldScheduledAt").value = card?.scheduledAt
+          ? new Date(card.scheduledAt.toMillis()).toISOString().slice(0, 16)
+          : "";
         document.getElementById("formStatus").textContent = "";
 
         const preview = document.getElementById("photoPreview");
@@ -806,11 +822,14 @@
             photoUrl = await uploadPhoto(pendingPhotoFile);
           }
 
+          const scheduledAtVal = document.getElementById("fieldScheduledAt").value;
           const data = {
             name,
             subtitle: document.getElementById("fieldSubtitle").value.trim(),
             message: document.getElementById("fieldMessage").value.trim(),
             signature: document.getElementById("fieldSignature").value.trim(),
+            recipientEmail: document.getElementById("fieldEmail").value.trim(),
+            scheduledAt: scheduledAtVal ? Timestamp.fromDate(new Date(scheduledAtVal)) : null,
             wishes: getWishes(),
             photoUrl: photoUrl ?? "",
             updatedAt: serverTimestamp(),
