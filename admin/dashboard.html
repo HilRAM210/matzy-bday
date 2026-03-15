@@ -738,7 +738,10 @@
         document.getElementById("fieldSignature").value = card?.signature ?? "";
         document.getElementById("fieldEmail").value = card?.recipientEmail ?? "";
         document.getElementById("fieldScheduledAt").value = card?.scheduledAt
-          ? new Date(card.scheduledAt.toMillis()).toISOString().slice(0, 16)
+          ? (() => {
+              const d = new Date(card.scheduledAt.toMillis());
+              return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+            })()
           : "";
         document.getElementById("formStatus").textContent = "";
 
@@ -890,11 +893,10 @@
       function renderCardItem(c) {
         const origin = window.location.origin;
         const publicUrl = `${origin}/card?id=${c.slug}`;
-        const date =
-          c.createdAt?.toDate().toLocaleDateString("id-ID", {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
+        const dateSource = c.scheduledAt ?? c.createdAt;
+        const date = dateSource?.toDate().toLocaleString("id-ID", {
+            day: "numeric", month: "long", year: "numeric",
+            hour: "2-digit", minute: "2-digit",
           }) ?? "—";
 
         const el = document.createElement("div");
