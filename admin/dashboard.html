@@ -208,6 +208,35 @@
         border-top: 1px solid var(--border);
       }
 
+      /* ── Delete Confirm Modal ── */
+      #deleteOverlay .modal {
+        width: min(400px, 100%);
+        padding: 32px 28px;
+        text-align: center;
+      }
+      .delete-icon {
+        font-size: 40px;
+        margin-bottom: 16px;
+      }
+      .delete-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 8px;
+      }
+      .delete-subtitle {
+        font-size: 14px;
+        color: rgba(201, 168, 76, 0.6);
+        margin-bottom: 28px;
+        line-height: 1.5;
+      }
+      #deleteOverlay .modal-footer {
+        justify-content: center;
+        border-top: none;
+        margin-top: 0;
+        padding-top: 0;
+      }
+
       /* ── Form ── */
       .form-group {
         margin-bottom: 18px;
@@ -564,6 +593,19 @@
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
+    <!-- Delete Confirm Modal -->
+    <div class="modal-overlay" id="deleteOverlay">
+      <div class="modal">
+        <div class="delete-icon">🗑️</div>
+        <div class="delete-title">Hapus Kartu?</div>
+        <div class="delete-subtitle" id="deleteSubtitle"></div>
+        <div class="modal-footer">
+          <button class="btn-ghost" id="btnDeleteCancel">Batal</button>
+          <button class="btn-primary" id="btnDeleteConfirm" style="background:rgba(224,112,112,0.15);color:#e07070;border:1px solid rgba(224,112,112,0.3);">Hapus</button>
+        </div>
+      </div>
+    </div>
+
     <script type="module">
       import { auth, db } from "../js/firebase.js";
       import {
@@ -702,6 +744,35 @@
         document.getElementById("modalOverlay").classList.remove("open");
         editingId = null;
       }
+
+      // ── Delete confirm modal ──
+      let deletePendingId = null;
+
+      function confirmDelete(id, name) {
+        deletePendingId = id;
+        document.getElementById("deleteSubtitle").textContent =
+          `Kartu untuk "${name}" akan dihapus permanen dan tidak bisa dikembalikan.`;
+        document.getElementById("deleteOverlay").classList.add("open");
+      }
+
+      document.getElementById("btnDeleteCancel").addEventListener("click", () => {
+        document.getElementById("deleteOverlay").classList.remove("open");
+        deletePendingId = null;
+      });
+      document.getElementById("deleteOverlay").addEventListener("click", (e) => {
+        if (e.target === e.currentTarget) {
+          document.getElementById("deleteOverlay").classList.remove("open");
+          deletePendingId = null;
+        }
+      });
+      document.getElementById("btnDeleteConfirm").addEventListener("click", async () => {
+        if (!deletePendingId) return;
+        await deleteDoc(doc(db, "cards", deletePendingId));
+        document.getElementById("deleteOverlay").classList.remove("open");
+        deletePendingId = null;
+        showToast("Kartu dihapus");
+        loadCards();
+      });
 
       document
         .getElementById("btnNewCard")
@@ -858,11 +929,8 @@
         });
 
         // Delete
-        el.querySelector(".btn-delete").addEventListener("click", async () => {
-          if (!confirm(`Hapus kartu untuk "${c.name}"?`)) return;
-          await deleteDoc(doc(db, "cards", c.id));
-          showToast("Kartu dihapus");
-          loadCards();
+        el.querySelector(".btn-delete").addEventListener("click", () => {
+          confirmDelete(c.id, c.name);
         });
 
         return el;
