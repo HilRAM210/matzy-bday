@@ -814,7 +814,11 @@
       document.getElementById("btnDeleteConfirm").addEventListener("click", async () => {
         if (!deletePendingId) return;
         if (deletePendingPhotoUrl) {
-          try { await deleteObject(ref(storage, deletePendingPhotoUrl)); } catch (_) {}
+          try {
+            await deleteObject(ref(storage, deletePendingPhotoUrl));
+          } catch (err) {
+            console.error("Gagal menghapus foto dari storage:", err);
+          }
         }
         await deleteDoc(doc(db, "cards", deletePendingId));
         document.getElementById("deleteOverlay").classList.remove("open");
@@ -854,6 +858,16 @@
           if (pendingPhotoFile) {
             status.textContent = "Mengupload foto...";
             const uploaded = await uploadPhoto(pendingPhotoFile);
+            
+            // Hapus foto lama di storage jika ada
+            if (currentPhotoPath) {
+              try {
+                await deleteObject(ref(storage, currentPhotoPath));
+              } catch (err) {
+                console.error("Gagal menghapus foto lama:", err);
+              }
+            }
+
             photoUrl = uploaded.url;
             photoPath = uploaded.path;
           }

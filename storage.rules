@@ -3,8 +3,9 @@ service firebase.storage {
   match /b/{bucket}/o {
     match /cards/{fileName} {
       allow read: if true;
-      allow write: if request.resource.size < 5 * 1024 * 1024
-                   && request.resource.contentType.matches('image/.*');
+      allow create, update: if request.resource.size < 5 * 1024 * 1024
+                            && request.resource.contentType.matches('image/.*');
+      allow delete: if true;
     }
   }
 }
