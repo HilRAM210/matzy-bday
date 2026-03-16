@@ -16,7 +16,12 @@ exports.autoPublishCards = onSchedule({ schedule: "every 1 minutes", secrets: ["
     (d) => d.data().scheduledAt && d.data().scheduledAt.toMillis() <= now.toMillis()
   );
 
-  if (!due.length) return;
+  if (!due.length) {
+    console.log("No cards due for publishing");
+    return;
+  }
+  console.log(`Publishing ${due.length} card(s)`);
+
 
   const transporter = nodemailer.createTransport({
     service: "gmail",
