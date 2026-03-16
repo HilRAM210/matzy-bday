@@ -604,6 +604,19 @@
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
+    <!-- Logout Confirm Modal -->
+    <div class="modal-overlay" id="logoutOverlay">
+      <div class="modal">
+        <div class="delete-icon">👋</div>
+        <div class="delete-title">Keluar?</div>
+        <div class="delete-subtitle">Kamu akan keluar dari sesi admin.</div>
+        <div class="modal-footer">
+          <button class="btn-ghost" id="btnLogoutCancel">Batal</button>
+          <button class="btn-primary" id="btnLogoutConfirm">Keluar</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Delete Confirm Modal -->
     <div class="modal-overlay" id="deleteOverlay">
       <div class="modal">
@@ -627,6 +640,7 @@
         collection,
         addDoc,
         getDocs,
+        onSnapshot,
         doc,
         updateDoc,
         deleteDoc,
@@ -634,6 +648,8 @@
         Timestamp,
       } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
       import { uploadPhoto } from "../js/storage.js";
+      import { ref, deleteObject } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-storage.js";
+      import { storage } from "../js/firebase.js";
 
       // ── Auth guard ──
       onAuthStateChanged(auth, (user) => {
@@ -646,7 +662,14 @@
 
       document
         .getElementById("btnLogout")
-        .addEventListener("click", () => signOut(auth));
+        .addEventListener("click", () => document.getElementById("logoutOverlay").classList.add("open"));
+
+      document.getElementById("btnLogoutCancel").addEventListener("click", () =>
+        document.getElementById("logoutOverlay").classList.remove("open"));
+      document.getElementById("btnLogoutConfirm").addEventListener("click", () => signOut(auth));
+      document.getElementById("logoutOverlay").addEventListener("click", (e) => {
+        if (e.target === e.currentTarget) document.getElementById("logoutOverlay").classList.remove("open");
+      });
 
       // ── Toast ──
       function showToast(msg) {
@@ -722,10 +745,12 @@
       // ── Modal state ──
       let editingId = null;
       let currentPhotoUrl = null;
+      let currentPhotoPath = null;
 
       function openModal(card = null) {
         editingId = card?.id ?? null;
         currentPhotoUrl = card?.photoUrl ?? null;
+        currentPhotoPath = card?.photoPath ?? null;
         pendingPhotoFile = null;
 
         document.getElementById("modalTitle").textContent = card
@@ -766,9 +791,11 @@
 
       // ── Delete confirm modal ──
       let deletePendingId = null;
+      let deletePendingPhotoUrl = null;
 
-      function confirmDelete(id, name) {
+      function confirmDelete(id, name, photoPath) {
         deletePendingId = id;
+        deletePendingPhotoUrl = photoPath ?? null;
         document.getElementById("deleteSubtitle").textContent =
           `Kartu untuk "${name}" akan dihapus permanen dan tidak bisa dikembalikan.`;
         document.getElementById("deleteOverlay").classList.add("open");
@@ -786,11 +813,14 @@
       });
       document.getElementById("btnDeleteConfirm").addEventListener("click", async () => {
         if (!deletePendingId) return;
+        if (deletePendingPhotoUrl) {
+          try { await deleteObject(ref(storage, deletePendingPhotoUrl)); } catch (_) {}
+        }
         await deleteDoc(doc(db, "cards", deletePendingId));
         document.getElementById("deleteOverlay").classList.remove("open");
         deletePendingId = null;
+        deletePendingPhotoUrl = null;
         showToast("Kartu dihapus");
-        loadCards();
       });
 
       document
@@ -820,9 +850,12 @@
         try {
           // Upload foto jika ada file baru
           let photoUrl = currentPhotoUrl;
+          let photoPath = currentPhotoPath;
           if (pendingPhotoFile) {
             status.textContent = "Mengupload foto...";
-            photoUrl = await uploadPhoto(pendingPhotoFile);
+            const uploaded = await uploadPhoto(pendingPhotoFile);
+            photoUrl = uploaded.url;
+            photoPath = uploaded.path;
           }
 
           const scheduledAtVal = document.getElementById("fieldScheduledAt").value;
@@ -835,6 +868,7 @@
             scheduledAt: scheduledAtVal ? Timestamp.fromDate(new Date(scheduledAtVal)) : null,
             wishes: getWishes(),
             photoUrl: photoUrl ?? "",
+            photoPath: photoPath ?? "",
             updatedAt: serverTimestamp(),
           };
 
@@ -852,7 +886,6 @@
           }
 
           closeModal();
-          loadCards();
         } catch (err) {
           status.textContent = "Gagal menyimpan: " + err.message;
         } finally {
@@ -862,32 +895,23 @@
       });
 
       // ── Load & render cards ──
-      async function loadCards() {
+      function loadCards() {
         const grid = document.getElementById("cardsGrid");
         grid.innerHTML = '<div class="empty-state">Memuat...</div>';
 
-        try {
-          const snap = await getDocs(collection(db, "cards"));
-
+        onSnapshot(collection(db, "cards"), (snap) => {
           if (snap.empty) {
-            grid.innerHTML =
-              '<div class="empty-state">Belum ada kartu. Buat yang pertama!</div>';
+            grid.innerHTML = '<div class="empty-state">Belum ada kartu. Buat yang pertama!</div>';
             return;
           }
-
           const cards = [];
-          snap.forEach((docSnap) =>
-            cards.push({ id: docSnap.id, ...docSnap.data() }),
-          );
-          cards.sort(
-            (a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0),
-          );
-
+          snap.forEach((docSnap) => cards.push({ id: docSnap.id, ...docSnap.data() }));
+          cards.sort((a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0));
           grid.innerHTML = "";
           cards.forEach((c) => grid.appendChild(renderCardItem(c)));
-        } catch (err) {
+        }, (err) => {
           grid.innerHTML = `<div class="empty-state" style="color:#e07070">Error: ${err.message}</div>`;
-        }
+        });
       }
 
       function renderCardItem(c) {
@@ -933,25 +957,20 @@
         });
 
         // Edit
-        el.querySelector(".btn-edit").addEventListener("click", async () => {
-          const snap = await getDocs(collection(db, "cards"));
-          const found = snap.docs.find((d) => d.id === c.id);
-          if (found) openModal({ id: found.id, ...found.data() });
+        el.querySelector(".btn-edit").addEventListener("click", () => {
+          openModal({ id: c.id, ...c });
         });
 
         // Toggle public
         el.querySelector(".btn-toggle").addEventListener("click", async (e) => {
           const isPublic = e.currentTarget.dataset.public === "true";
           await updateDoc(doc(db, "cards", c.id), { isPublic: !isPublic });
-          showToast(
-            isPublic ? "Kartu disembunyikan" : "Kartu dipublikasikan ✓",
-          );
-          loadCards();
+          showToast(isPublic ? "Kartu disembunyikan" : "Kartu dipublikasikan ✓");
         });
 
         // Delete
         el.querySelector(".btn-delete").addEventListener("click", () => {
-          confirmDelete(c.id, c.name);
+          confirmDelete(c.id, c.name, c.photoPath);
         });
 
         return el;

@@ -10,5 +10,6 @@ export async function uploadPhoto(file) {
   const fileName = `${Date.now()}_${file.name}`;
   const storageRef = ref(storage, `cards/${fileName}`);
   const snapshot = await uploadBytes(storageRef, file);
-  return await getDownloadURL(snapshot.ref);
+  const url = await getDownloadURL(snapshot.ref);
+  return { url, path: `cards/${fileName}` };
 }

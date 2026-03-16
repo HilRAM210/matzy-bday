@@ -82,10 +82,19 @@
         font-family: "Cormorant Garamond", serif;
         font-size: 16px;
         margin-bottom: 20px;
-        transition: border-color 0.2s;
+        transition: border-color 0.2s, background-color 9999s ease-in-out 0s;
         outline: none;
       }
       input:focus { border-color: rgba(201, 168, 76, 0.6); }
+      input:-webkit-autofill,
+      input:-webkit-autofill:hover,
+      input:-webkit-autofill:focus {
+        -webkit-box-shadow: 0 0 0 1000px #221840 inset;
+        -webkit-text-fill-color: #f0e6d0;
+        border-color: rgba(201, 168, 76, 0.2);
+        caret-color: #f0e6d0;
+        transition: background-color 9999s ease-in-out 0s;
+      }
 
       button {
         width: 100%;
